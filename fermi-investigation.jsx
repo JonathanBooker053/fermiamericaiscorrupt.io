@@ -1859,6 +1859,7 @@ export default function App() {
   const tickRef = useRef(0);
   const dragMovedRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
+  const pinnedRef = useRef({});
   const [sel, setSel] = useState(null);
   const [filterCat, setFilterCat] = useState(null);
   const [dragging, setDragging] = useState(null);
@@ -1910,11 +1911,13 @@ export default function App() {
       }
 
       // Very strong home-zone gravity — nodes snap to their positions
+      // Uses manually pinned position if user has dragged the node
       NODES.forEach((n) => {
+        const pinned = pinnedRef.current[n.id];
         const frac = HOME_FRAC[n.id];
-        if (frac) {
-          const homeX = frac[0] * dims.w;
-          const homeY = frac[1] * dims.h;
+        const homeX = pinned ? pinned.x : (frac ? frac[0] * dims.w : null);
+        const homeY = pinned ? pinned.y : (frac ? frac[1] * dims.h : null);
+        if (homeX !== null) {
           n2[n.id].vx += (homeX - n2[n.id].x) * 0.40;
           n2[n.id].vy += (homeY - n2[n.id].y) * 0.40;
         }
@@ -2001,7 +2004,12 @@ export default function App() {
           <svg ref={svgRef} width={dims.w} height={dims.h}
             style={{ display: "block", cursor: dragging ? "grabbing" : "crosshair", userSelect: "none" }}
             onMouseMove={onMM}
-            onMouseUp={() => { setDragging(null); }}
+            onMouseUp={() => {
+              if (dragging && dragMovedRef.current && posRef.current[dragging]) {
+                pinnedRef.current[dragging] = { x: posRef.current[dragging].x, y: posRef.current[dragging].y };
+              }
+              setDragging(null);
+            }}
             onMouseLeave={() => { setDragging(null); dragMovedRef.current = false; }}
             onClick={() => { if (!dragMovedRef.current) setSel(null); dragMovedRef.current = false; }}>
             <defs>
