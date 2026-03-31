@@ -1884,6 +1884,7 @@ export default function App() {
 
   useEffect(() => {
     if (!posRef.current) return;
+    tickRef.current = 0;
     let alive = true;
     const run = () => {
       if (!alive || tickRef.current > 30) return;
@@ -1958,6 +1959,7 @@ export default function App() {
     // Only reposition the node once we're sure this is a drag, not a click
     if (dragMovedRef.current) {
       posRef.current = { ...posRef.current, [dragging]: { ...posRef.current[dragging], x, y, vx: 0, vy: 0 } };
+      setPos({ ...posRef.current });
     }
   }, [dragging]);
 
