@@ -1950,12 +1950,15 @@ export default function App() {
     if (!dragging || !svgRef.current) return;
     const r = svgRef.current.getBoundingClientRect();
     const x = e.clientX - r.left, y = e.clientY - r.top;
-    // Mark as a drag if mouse moved more than 5px from where it started
+    // Mark as a drag only if mouse moved more than 8px from where it started
     if (!dragMovedRef.current) {
       const dx = x - dragStartRef.current.x, dy = y - dragStartRef.current.y;
-      if (Math.sqrt(dx * dx + dy * dy) > 5) dragMovedRef.current = true;
+      if (Math.sqrt(dx * dx + dy * dy) > 8) dragMovedRef.current = true;
     }
-    posRef.current = { ...posRef.current, [dragging]: { ...posRef.current[dragging], x, y, vx: 0, vy: 0 } };
+    // Only reposition the node once we're sure this is a drag, not a click
+    if (dragMovedRef.current) {
+      posRef.current = { ...posRef.current, [dragging]: { ...posRef.current[dragging], x, y, vx: 0, vy: 0 } };
+    }
   }, [dragging]);
 
   const selNode = sel ? NODE_DATA[sel] : null;
