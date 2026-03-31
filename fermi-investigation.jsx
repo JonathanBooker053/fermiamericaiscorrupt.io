@@ -1950,20 +1950,33 @@ export default function App() {
   const vIds = new Set(vNodes.map((n) => n.id));
   const vEdges = EDGES.filter((e) => vIds.has(e.source) && vIds.has(e.target));
 
-  const onMM = useCallback((e) => {
-    if (!dragging || !svgRef.current) return;
-    const r = svgRef.current.getBoundingClientRect();
-    const x = e.clientX - r.left, y = e.clientY - r.top;
-    // Mark as a drag only if mouse moved more than 8px from where it started
-    if (!dragMovedRef.current) {
-      const dx = x - dragStartRef.current.x, dy = y - dragStartRef.current.y;
-      if (Math.sqrt(dx * dx + dy * dy) > 8) dragMovedRef.current = true;
-    }
-    // Only reposition the node once we're sure this is a drag, not a click
-    if (dragMovedRef.current) {
-      posRef.current = { ...posRef.current, [dragging]: { ...posRef.current[dragging], x, y, vx: 0, vy: 0 } };
-      setPos({ ...posRef.current });
-    }
+  useEffect(() => {
+    if (!dragging) return;
+    const onMove = (e) => {
+      if (!svgRef.current) return;
+      const r = svgRef.current.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      if (!dragMovedRef.current) {
+        const dx = x - dragStartRef.current.x, dy = y - dragStartRef.current.y;
+        if (Math.sqrt(dx * dx + dy * dy) > 8) dragMovedRef.current = true;
+      }
+      if (dragMovedRef.current) {
+        posRef.current = { ...posRef.current, [dragging]: { ...posRef.current[dragging], x, y, vx: 0, vy: 0 } };
+        setPos({ ...posRef.current });
+      }
+    };
+    const onUp = () => {
+      if (dragMovedRef.current && posRef.current[dragging]) {
+        pinnedRef.current[dragging] = { x: posRef.current[dragging].x, y: posRef.current[dragging].y };
+      }
+      setDragging(null);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
   }, [dragging]);
 
   const selNode = sel ? NODE_DATA[sel] : null;
@@ -2003,14 +2016,6 @@ export default function App() {
         <div style={{ flex: 1, position: "relative" }}>
           <svg ref={svgRef} width={dims.w} height={dims.h}
             style={{ display: "block", cursor: dragging ? "grabbing" : "crosshair", userSelect: "none" }}
-            onMouseMove={onMM}
-            onMouseUp={() => {
-              if (dragging && dragMovedRef.current && posRef.current[dragging]) {
-                pinnedRef.current[dragging] = { x: posRef.current[dragging].x, y: posRef.current[dragging].y };
-              }
-              setDragging(null);
-            }}
-            onMouseLeave={() => { setDragging(null); dragMovedRef.current = false; }}
             onClick={() => { if (!dragMovedRef.current) setSel(null); dragMovedRef.current = false; }}>
             <defs>
               {Object.entries(EDGE_COLOR).map(([t, c]) => (
