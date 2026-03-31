@@ -1999,7 +1999,7 @@ export default function App() {
         {/* SVG canvas */}
         <div style={{ flex: 1, position: "relative" }}>
           <svg ref={svgRef} width={dims.w} height={dims.h}
-            style={{ display: "block", cursor: dragging ? "grabbing" : "crosshair" }}
+            style={{ display: "block", cursor: dragging ? "grabbing" : "crosshair", userSelect: "none" }}
             onMouseMove={onMM}
             onMouseUp={() => { setDragging(null); }}
             onMouseLeave={() => { setDragging(null); dragMovedRef.current = false; }}
@@ -2100,6 +2100,7 @@ export default function App() {
                   style={{ cursor: "pointer" }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
+                    e.preventDefault();
                     if (svgRef.current) {
                       const r = svgRef.current.getBoundingClientRect();
                       dragStartRef.current = { x: e.clientX - r.left, y: e.clientY - r.top };
