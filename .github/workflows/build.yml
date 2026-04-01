@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [main, modular-architecture]
+    branches: [main, modular-architecture, texas-dem-campaign-style]
 
 jobs:
   build:

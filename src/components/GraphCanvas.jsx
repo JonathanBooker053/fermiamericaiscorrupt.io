@@ -9,7 +9,10 @@ export default function GraphCanvas({
   setSel,
   filterCat,
   setDetailSection,
+  styleName,
+  remapFlag,
 }) {
+  const isCampaign = styleName === 'texas-dem';
   const svgRef = useRef(null);
   const [dims, setDims] = useState({ w: 820, h: 620 });
   const [pos, setPos] = useState(null);
@@ -199,17 +202,17 @@ export default function GraphCanvas({
     return (
       <div
         style={{
-          background: "#f4f6f9",
+          background: isCampaign ? "#F4F6FB" : "#f4f6f9",
           height: "100vh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#8aa4bb",
-          fontFamily: "monospace",
+          color: isCampaign ? "#3D4566" : "#8aa4bb",
+          fontFamily: isCampaign ? "'Lato', sans-serif" : "monospace",
           fontSize: "12px",
         }}
       >
-        INITIALIZING NETWORK...
+        {isCampaign ? "Loading network..." : "INITIALIZING NETWORK..."}
       </div>
     );
 
@@ -264,7 +267,7 @@ export default function GraphCanvas({
             <path
               d="M 40 0 L 0 0 0 40"
               fill="none"
-              stroke="#dde6f0"
+              stroke={isCampaign ? "#d4ddef" : "#dde6f0"}
               strokeWidth="0.5"
             />
           </pattern>
@@ -277,12 +280,12 @@ export default function GraphCanvas({
             x={z.x * dims.w}
             y={z.y * dims.h}
             textAnchor={z.anchor}
-            fontSize="9"
-            fontWeight="bold"
-            letterSpacing="0.12em"
-            fill="#9ab8d0"
-            opacity="0.6"
-            style={{ pointerEvents: "none", userSelect: "none" }}
+            fontSize={isCampaign ? "11" : "9"}
+            fontWeight={isCampaign ? "500" : "bold"}
+            letterSpacing={isCampaign ? "0.10em" : "0.12em"}
+            fill={isCampaign ? "rgba(0,40,104,0.35)" : "#9ab8d0"}
+            opacity={isCampaign ? "1" : "0.6"}
+            style={{ pointerEvents: "none", userSelect: "none", fontFamily: isCampaign ? "'Lato', sans-serif" : undefined }}
           >
             {z.label}
           </text>
@@ -325,10 +328,10 @@ export default function GraphCanvas({
                   fontSize="10"
                   fontWeight="bold"
                   opacity="1"
-                  stroke="#f4f6f9"
+                  stroke={isCampaign ? "#F4F6FB" : "#f4f6f9"}
                   strokeWidth="2.5"
                   paintOrder="stroke fill"
-                  style={{ pointerEvents: "none" }}
+                  style={{ pointerEvents: "none", fontFamily: isCampaign ? "'Lato', sans-serif" : undefined }}
                 >
                   {edge.label.length > 30
                     ? edge.label.slice(0, 28) + "..."
@@ -349,8 +352,8 @@ export default function GraphCanvas({
           const c = CAT_COLOR[node.category] || "#1e3a4a";
           const R = weightToRadius(node.id, isSel);
           const labelLines = wrapLabel(node.label);
-          const labelFontSize = isSel ? "12" : "11";
-          const labelColor = isDim ? "#c8d6e5" : isSel ? c : "#1a2840";
+          const labelFontSize = isCampaign ? "12" : isSel ? "12" : "11";
+          const labelColor = isDim ? "#c8d6e5" : isSel ? c : (isCampaign ? "#0A0A1A" : "#1a2840");
           const lineHeight = 13;
 
           return (
@@ -395,7 +398,7 @@ export default function GraphCanvas({
                 r={R}
                 fill="#ffffff"
                 stroke={c}
-                strokeWidth={isSel ? 2.5 : isConn ? 2 : 1.2}
+                strokeWidth={isCampaign ? (isSel ? 2.5 : isConn ? 2 : 2.5) : (isSel ? 2.5 : isConn ? 2 : 1.2)}
                 opacity={isDim ? 0.2 : 1}
               />
               {nd?.flag && (
@@ -424,31 +427,56 @@ export default function GraphCanvas({
                   y={R + 15 + li * lineHeight}
                   textAnchor="middle"
                   fontSize={labelFontSize}
-                  fontWeight={isSel ? "bold" : "600"}
+                  fontWeight={isCampaign ? "500" : isSel ? "bold" : "600"}
                   fill={labelColor}
-                  stroke="#f4f6f9"
+                  stroke={isCampaign ? "#F4F6FB" : "#f4f6f9"}
                   strokeWidth="3"
                   paintOrder="stroke fill"
-                  style={{ pointerEvents: "none" }}
+                  style={{ pointerEvents: "none", fontFamily: isCampaign ? "'Lato', sans-serif" : undefined }}
                 >
                   {line}
                 </text>
               ))}
               {nd?.flag && !isDim && (
-                <text
-                  y={-R - 10}
-                  textAnchor="middle"
-                  fontSize="8"
-                  fontWeight="bold"
-                  fill={nd.flagColor}
-                  stroke="#f4f6f9"
-                  strokeWidth="2.5"
-                  paintOrder="stroke fill"
-                  opacity={isSel || isConn ? 1 : 0.75}
-                  style={{ pointerEvents: "none" }}
-                >
-                  [{nd.flag}]
-                </text>
+                isCampaign ? (
+                  <g>
+                    <rect
+                      x={-((remapFlag ? remapFlag(nd.flag, styleName) : nd.flag).length * 3.2 + 7)}
+                      y={-R - 18}
+                      width={(remapFlag ? remapFlag(nd.flag, styleName) : nd.flag).length * 6.4 + 14}
+                      height={16}
+                      rx={4}
+                      fill="rgba(191,10,48,0.08)"
+                      style={{ pointerEvents: "none" }}
+                    />
+                    <text
+                      y={-R - 7}
+                      textAnchor="middle"
+                      fontSize="10"
+                      fontWeight="600"
+                      fill={nd.flagColor || '#BF0A30'}
+                      opacity={isSel || isConn ? 1 : 0.75}
+                      style={{ pointerEvents: "none", fontFamily: "'Lato', sans-serif" }}
+                    >
+                      {remapFlag ? remapFlag(nd.flag, styleName) : nd.flag}
+                    </text>
+                  </g>
+                ) : (
+                  <text
+                    y={-R - 10}
+                    textAnchor="middle"
+                    fontSize="8"
+                    fontWeight="bold"
+                    fill={nd.flagColor}
+                    stroke="#f4f6f9"
+                    strokeWidth="2.5"
+                    paintOrder="stroke fill"
+                    opacity={isSel || isConn ? 1 : 0.75}
+                    style={{ pointerEvents: "none" }}
+                  >
+                    [{nd.flag}]
+                  </text>
+                )
               )}
             </g>
           );

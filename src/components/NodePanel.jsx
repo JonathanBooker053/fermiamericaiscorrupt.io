@@ -8,8 +8,12 @@ export default function NodePanel({
   detailSection,
   setDetailSection,
   nodes,
+  styleName,
+  sidebarConfig,
+  remapFlag,
 }) {
   const { CAT_COLOR, CAT_LABEL, EDGE_COLOR, EDGE_LABEL } = theme;
+  const isCampaign = styleName === 'texas-dem';
 
   const selNode = sel ? nodeData[sel] : null;
   const relEdges = sel
@@ -17,44 +21,77 @@ export default function NodePanel({
     : [];
   const sources = sel ? nodeSources[sel] : null;
 
+  const panelFont = isCampaign ? "'Lato', sans-serif" : undefined;
+  const borderColor = isCampaign ? 'rgba(0,40,104,0.12)' : '#c8d6e5';
+  const headingColor = isCampaign ? '#002868' : '#1e3a55';
+  const bodyColor = isCampaign ? '#3D4566' : '#4a6a85';
+  const accentBg = isCampaign ? '#F4F6FB' : '#f0f4f8';
+
   if (!selNode) {
     return (
       <div
         style={{
           width: "320px",
           background: "#ffffff",
-          borderLeft: "1px solid #c8d6e5",
+          borderLeft: `1px solid ${borderColor}`,
           display: "flex",
           flexDirection: "column",
           overflowY: "auto",
+          fontFamily: panelFont,
         }}
       >
         <div style={{ padding: "14px", flex: 1, background: "#ffffff" }}>
-          <div
-            style={{
-              fontSize: "11px",
-              color: "#4a6a85",
-              marginBottom: "18px",
-              letterSpacing: "0.05em",
-              lineHeight: 2,
-            }}
-          >
-            SELECT ANY NODE TO VIEW
-            <br />
-            FULL RESEARCH DOSSIER
-          </div>
+          {isCampaign && sidebarConfig ? (
+            <>
+              <div
+                style={{
+                  fontSize: '15px',
+                  color: headingColor,
+                  fontWeight: 700,
+                  marginBottom: '8px',
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                }}
+              >
+                {sidebarConfig.instructionHeading}
+              </div>
+              <div
+                style={{
+                  fontSize: '13px',
+                  color: bodyColor,
+                  lineHeight: 1.6,
+                  marginBottom: '18px',
+                }}
+              >
+                {sidebarConfig.instructionBody}
+              </div>
+            </>
+          ) : (
+            <div
+              style={{
+                fontSize: "11px",
+                color: "#4a6a85",
+                marginBottom: "18px",
+                letterSpacing: "0.05em",
+                lineHeight: 2,
+              }}
+            >
+              SELECT ANY NODE TO VIEW
+              <br />
+              FULL RESEARCH DOSSIER
+            </div>
+          )}
 
           <div style={{ marginBottom: "14px" }}>
             <div
               style={{
-                fontSize: "10px",
-                color: "#1e3a55",
-                letterSpacing: "0.1em",
+                fontSize: isCampaign ? "12px" : "10px",
+                color: headingColor,
+                letterSpacing: isCampaign ? "0.04em" : "0.1em",
                 marginBottom: "7px",
                 fontWeight: "bold",
               }}
             >
-              ENTITY TYPES
+              {isCampaign ? "Entity Types" : "ENTITY TYPES"}
             </div>
             {Object.entries(CAT_COLOR).map(([c, col]) => (
               <div
@@ -70,12 +107,12 @@ export default function NodePanel({
                   style={{
                     width: "10px",
                     height: "10px",
-                    border: `1.5px solid ${col}`,
+                    border: `${isCampaign ? '2.5px' : '1.5px'} solid ${col}`,
                     flexShrink: 0,
-                    borderRadius: "2px",
+                    borderRadius: isCampaign ? "50%" : "2px",
                   }}
                 />
-                <span style={{ fontSize: "11px", color: "#2a4560" }}>
+                <span style={{ fontSize: "11px", color: isCampaign ? bodyColor : "#2a4560" }}>
                   {CAT_LABEL[c]}
                 </span>
               </div>
@@ -85,14 +122,14 @@ export default function NodePanel({
           <div style={{ marginBottom: "14px" }}>
             <div
               style={{
-                fontSize: "10px",
-                color: "#1e3a55",
-                letterSpacing: "0.1em",
+                fontSize: isCampaign ? "12px" : "10px",
+                color: headingColor,
+                letterSpacing: isCampaign ? "0.04em" : "0.1em",
                 marginBottom: "7px",
                 fontWeight: "bold",
               }}
             >
-              CONNECTION TYPES
+              {isCampaign ? "Connection Types" : "CONNECTION TYPES"}
             </div>
             {Object.entries(EDGE_COLOR).map(([t, c]) => (
               <div
@@ -112,7 +149,7 @@ export default function NodePanel({
                     flexShrink: 0,
                   }}
                 />
-                <span style={{ fontSize: "11px", color: "#2a4560" }}>
+                <span style={{ fontSize: "11px", color: isCampaign ? bodyColor : "#2a4560" }}>
                   {EDGE_LABEL[t]}
                 </span>
               </div>
@@ -122,44 +159,57 @@ export default function NodePanel({
           <div
             style={{
               fontSize: "10px",
-              color: "#4a6a85",
-              lineHeight: 2,
-              borderTop: "1px solid #c8d6e5",
+              color: bodyColor,
+              lineHeight: isCampaign ? 1.6 : 2,
+              borderTop: `1px solid ${borderColor}`,
               paddingTop: "12px",
             }}
           >
-            <div style={{ color: "#1e3a55" }}>NODES: {nodes.length}</div>
-            <div style={{ color: "#1e3a55" }}>EDGES: {edges.length}</div>
-            <div style={{ color: "#1e3a55" }}>DRAG NODES TO REPOSITION</div>
-            <div style={{ color: "#1e3a55" }}>
-              CLICK NODE IN PANEL TO NAVIGATE
-            </div>
-            <div
-              style={{
-                marginTop: "8px",
-                fontSize: "10px",
-                color: "#6b8ca8",
-                lineHeight: 1.6,
-              }}
-            >
-              Data sourced from SEC filings, court records, campaign finance
-              disclosures, and investigative reporting through March 31, 2026.
-            </div>
+            {isCampaign && sidebarConfig ? (
+              <>
+                <div style={{ fontSize: '11px', color: bodyColor, lineHeight: 1.6 }}>
+                  {sidebarConfig.sourceNote}
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ color: headingColor }}>NODES: {nodes.length}</div>
+                <div style={{ color: headingColor }}>EDGES: {edges.length}</div>
+                <div style={{ color: headingColor }}>DRAG NODES TO REPOSITION</div>
+                <div style={{ color: headingColor }}>
+                  CLICK NODE IN PANEL TO NAVIGATE
+                </div>
+                <div
+                  style={{
+                    marginTop: "8px",
+                    fontSize: "10px",
+                    color: "#6b8ca8",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Data sourced from SEC filings, court records, campaign finance
+                  disclosures, and investigative reporting through March 31, 2026.
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
     );
   }
 
+  const displayFlag = remapFlag ? remapFlag(selNode.flag, styleName) : selNode.flag;
+
   return (
     <div
       style={{
         width: "320px",
         background: "#ffffff",
-        borderLeft: "1px solid #c8d6e5",
+        borderLeft: `1px solid ${borderColor}`,
         display: "flex",
         flexDirection: "column",
         overflowY: "auto",
+        fontFamily: panelFont,
       }}
     >
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -167,8 +217,8 @@ export default function NodePanel({
         <div
           style={{
             padding: "12px 14px",
-            borderBottom: "1px solid #c8d6e5",
-            background: "#f0f4f8",
+            borderBottom: `1px solid ${borderColor}`,
+            background: accentBg,
           }}
         >
           <div
@@ -187,6 +237,7 @@ export default function NodePanel({
                   fontWeight: "bold",
                   color: CAT_COLOR[selNode.category],
                   lineHeight: 1.3,
+                  fontFamily: isCampaign ? "'Playfair Display', Georgia, serif" : undefined,
                 }}
               >
                 {selNode.label}
@@ -194,7 +245,7 @@ export default function NodePanel({
               <div
                 style={{
                   fontSize: "10px",
-                  color: "#4a6a85",
+                  color: bodyColor,
                   marginTop: "3px",
                   lineHeight: 1.4,
                 }}
@@ -203,18 +254,29 @@ export default function NodePanel({
               </div>
             </div>
           </div>
-          {selNode.flag && (
+          {displayFlag && (
             <span
-              style={{
-                fontSize: "10px",
-                fontWeight: "bold",
-                color: selNode.flagColor,
-                border: `1px solid ${selNode.flagColor}`,
-                padding: "2px 8px",
-                letterSpacing: "0.08em",
-              }}
+              style={
+                isCampaign
+                  ? {
+                      fontSize: "10px",
+                      fontWeight: "600",
+                      color: selNode.flagColor || '#BF0A30',
+                      background: 'rgba(191,10,48,0.08)',
+                      padding: "2px 7px",
+                      borderRadius: "4px",
+                    }
+                  : {
+                      fontSize: "10px",
+                      fontWeight: "bold",
+                      color: selNode.flagColor,
+                      border: `1px solid ${selNode.flagColor}`,
+                      padding: "2px 8px",
+                      letterSpacing: "0.08em",
+                    }
+              }
             >
-              {selNode.flag}
+              {displayFlag}
             </span>
           )}
         </div>
@@ -224,33 +286,54 @@ export default function NodePanel({
           style={{
             display: "flex",
             overflowX: "auto",
-            borderBottom: "1px solid #c8d6e5",
-            background: "#f0f4f8",
+            borderBottom: `1px solid ${borderColor}`,
+            background: accentBg,
           }}
         >
           {selNode.sections.map((s, i) => (
             <button
               key={i}
               onClick={() => setDetailSection(i)}
-              style={{
-                padding: "6px 11px",
-                fontSize: "10px",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                letterSpacing: "0.05em",
-                border: "none",
-                borderBottom:
-                  detailSection === i
-                    ? `2px solid ${CAT_COLOR[selNode.category]}`
-                    : "2px solid transparent",
-                background: "transparent",
-                color:
-                  detailSection === i
-                    ? CAT_COLOR[selNode.category]
-                    : "#4a6a85",
-              }}
+              style={
+                isCampaign
+                  ? {
+                      padding: "6px 11px",
+                      fontSize: "11px",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                      fontFamily: "'Lato', sans-serif",
+                      fontWeight: detailSection === i ? 600 : 400,
+                      border: "none",
+                      borderBottom:
+                        detailSection === i
+                          ? `2px solid ${CAT_COLOR[selNode.category]}`
+                          : "2px solid transparent",
+                      background: "transparent",
+                      color:
+                        detailSection === i
+                          ? CAT_COLOR[selNode.category]
+                          : bodyColor,
+                    }
+                  : {
+                      padding: "6px 11px",
+                      fontSize: "10px",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                      letterSpacing: "0.05em",
+                      border: "none",
+                      borderBottom:
+                        detailSection === i
+                          ? `2px solid ${CAT_COLOR[selNode.category]}`
+                          : "2px solid transparent",
+                      background: "transparent",
+                      color:
+                        detailSection === i
+                          ? CAT_COLOR[selNode.category]
+                          : "#4a6a85",
+                    }
+              }
             >
-              {s.title.toUpperCase()}
+              {isCampaign ? s.title : s.title.toUpperCase()}
             </button>
           ))}
         </div>
@@ -272,17 +355,17 @@ export default function NodePanel({
                   style={{
                     fontSize: "11px",
                     color: item.startsWith("(!)")
-                      ? "#dc2626"
+                      ? (isCampaign ? "#BF0A30" : "#dc2626")
                       : item.startsWith("-")
-                      ? "#9ab0c4"
-                      : "#1e3a55",
+                      ? (isCampaign ? "#6B7494" : "#9ab0c4")
+                      : (isCampaign ? "#0A0A1A" : "#1e3a55"),
                     padding: "4px 0",
-                    borderBottom: "1px solid #edf2f7",
+                    borderBottom: `1px solid ${isCampaign ? 'rgba(0,40,104,0.06)' : '#edf2f7'}`,
                     lineHeight: 1.6,
                   }}
                 >
                   {item.startsWith("  -") ? (
-                    <span style={{ color: "#4a6a85" }}>{item}</span>
+                    <span style={{ color: bodyColor }}>{item}</span>
                   ) : (
                     item
                   )}
@@ -295,21 +378,21 @@ export default function NodePanel({
         {/* Related edges */}
         <div
           style={{
-            borderTop: "1px solid #c8d6e5",
+            borderTop: `1px solid ${borderColor}`,
             padding: "8px 14px",
-            background: "#f0f4f8",
+            background: accentBg,
           }}
         >
           <div
             style={{
-              fontSize: "10px",
-              color: "#4a6a85",
-              letterSpacing: "0.08em",
+              fontSize: isCampaign ? "11px" : "10px",
+              color: bodyColor,
+              letterSpacing: isCampaign ? "0.04em" : "0.08em",
               marginBottom: "6px",
               fontWeight: "bold",
             }}
           >
-            CONNECTIONS ({relEdges.length})
+            {isCampaign ? `Connections (${relEdges.length})` : `CONNECTIONS (${relEdges.length})`}
           </div>
           <div style={{ maxHeight: "160px", overflowY: "auto" }}>
             {relEdges.map((e, i) => {
@@ -347,13 +430,13 @@ export default function NodePanel({
                     {out ? "\u2192" : "\u2190"}
                   </span>
                   <div>
-                    <div style={{ fontSize: "10px", color: "#4a6a85" }}>
+                    <div style={{ fontSize: "10px", color: bodyColor }}>
                       {e.label}
                     </div>
                     <div
                       style={{
                         fontSize: "11px",
-                        color: on ? CAT_COLOR[on.category] : "#1e3a55",
+                        color: on ? CAT_COLOR[on.category] : headingColor,
                         fontWeight: "bold",
                       }}
                     >
@@ -370,21 +453,21 @@ export default function NodePanel({
         {sources && (
           <div
             style={{
-              borderTop: "1px solid #c8d6e5",
+              borderTop: `1px solid ${borderColor}`,
               padding: "8px 14px",
-              background: "#f8fafc",
+              background: isCampaign ? "#FFFFFF" : "#f8fafc",
             }}
           >
             <div
               style={{
-                fontSize: "10px",
-                color: "#4a6a85",
-                letterSpacing: "0.08em",
+                fontSize: isCampaign ? "11px" : "10px",
+                color: bodyColor,
+                letterSpacing: isCampaign ? "0.04em" : "0.08em",
                 marginBottom: "6px",
                 fontWeight: "bold",
               }}
             >
-              SOURCES ({sources.length})
+              {isCampaign ? `Sources (${sources.length})` : `SOURCES (${sources.length})`}
             </div>
             <div style={{ maxHeight: "180px", overflowY: "auto" }}>
               {sources.map((s, i) => (
@@ -393,8 +476,8 @@ export default function NodePanel({
                   style={{
                     marginBottom: "5px",
                     padding: "4px 6px",
-                    background: "#ffffff",
-                    borderLeft: "2px solid #c8d6e5",
+                    background: isCampaign ? accentBg : "#ffffff",
+                    borderLeft: `2px solid ${isCampaign ? 'rgba(0,40,104,0.2)' : '#c8d6e5'}`,
                   }}
                 >
                   <a
@@ -403,7 +486,7 @@ export default function NodePanel({
                     rel="noopener noreferrer"
                     style={{
                       fontSize: "10px",
-                      color: "#1d6fa4",
+                      color: isCampaign ? "#002868" : "#1d6fa4",
                       textDecoration: "none",
                       lineHeight: 1.5,
                       display: "block",
