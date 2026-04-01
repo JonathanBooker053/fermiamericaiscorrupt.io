@@ -1,14 +1,13 @@
 {
-  "style": "texas-dem",
   "CAT_COLOR": {
     "person": "#60a5fa",
     "company_core": "#f59e0b",
     "company_failed": "#ef4444",
-    "company_other": "#8b5cf6",
-    "finance": "#10b981",
-    "partner": "#06b6d4",
-    "political": "#f97316",
-    "legal": "#ec4899"
+    "company_other": "#a78bfa",
+    "finance": "#34d399",
+    "partner": "#22d3ee",
+    "political": "#fb923c",
+    "legal": "#f472b6"
   },
   "CAT_LABEL": {
     "person": "Key People",
@@ -25,13 +24,13 @@
     "leadership": "#60a5fa",
     "core": "#f59e0b",
     "career": "#a78bfa",
-    "political_donation": "#f97316",
-    "political": "#fb923c",
+    "political_donation": "#fb923c",
+    "political": "#fdba74",
     "revolving_door": "#ef4444",
-    "regulatory": "#06b6d4",
-    "financing": "#10b981",
-    "partnership": "#34d399",
-    "legal": "#ec4899"
+    "regulatory": "#22d3ee",
+    "financing": "#34d399",
+    "partnership": "#86efac",
+    "legal": "#f472b6"
   },
   "EDGE_LABEL": {
     "family": "Family Tie",

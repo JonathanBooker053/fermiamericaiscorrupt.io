@@ -9,10 +9,7 @@ export default function GraphCanvas({
   setSel,
   filterCat,
   setDetailSection,
-  styleName,
-  remapFlag,
 }) {
-  const isCampaign = styleName === 'texas-dem';
   const svgRef = useRef(null);
   const [dims, setDims] = useState({ w: 820, h: 620 });
   const [pos, setPos] = useState(null);
@@ -202,17 +199,17 @@ export default function GraphCanvas({
     return (
       <div
         style={{
-          background: isCampaign ? "#F4F6FB" : "#f4f6f9",
+          background: "#1a0e0e",
           height: "100vh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: isCampaign ? "#3D4566" : "#8aa4bb",
-          fontFamily: isCampaign ? "'Lato', sans-serif" : "monospace",
+          color: "#9a8070",
+          fontFamily: "'DM Mono', monospace",
           fontSize: "12px",
         }}
       >
-        {isCampaign ? "Loading network..." : "INITIALIZING NETWORK..."}
+        INITIALIZING NETWORK...
       </div>
     );
 
@@ -226,7 +223,7 @@ export default function GraphCanvas({
   };
 
   return (
-    <div style={{ flex: 1, position: "relative" }}>
+    <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
       <svg
         ref={svgRef}
         width={dims.w}
@@ -241,7 +238,14 @@ export default function GraphCanvas({
           dragMovedRef.current = false;
         }}
       >
+        {/* SVG filter definitions */}
         <defs>
+          <filter id="pin-glow">
+            <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#c0392b" floodOpacity="0.6"/>
+          </filter>
+          <filter id="node-glow">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#c0392b" floodOpacity="0.3"/>
+          </filter>
           {Object.entries(EDGE_COLOR).map(([t, c]) => (
             <marker
               key={t}
@@ -255,9 +259,6 @@ export default function GraphCanvas({
               <path d="M0,0 L0,10 L10,5z" fill={c} opacity="0.9" />
             </marker>
           ))}
-        </defs>
-
-        <defs>
           <pattern
             id="grid"
             width="40"
@@ -267,30 +268,34 @@ export default function GraphCanvas({
             <path
               d="M 40 0 L 0 0 0 40"
               fill="none"
-              stroke={isCampaign ? "#d4ddef" : "#dde6f0"}
+              stroke="rgba(61,42,26,0.4)"
               strokeWidth="0.5"
             />
           </pattern>
         </defs>
+
+        {/* Dark corkboard background with subtle grid */}
+        <rect width={dims.w} height={dims.h} fill="#1a0e0e" />
         <rect width={dims.w} height={dims.h} fill="url(#grid)" />
 
+        {/* Zone labels */}
         {ZONE_LABELS.map((z, i) => (
           <text
             key={i}
             x={z.x * dims.w}
             y={z.y * dims.h}
             textAnchor={z.anchor}
-            fontSize={isCampaign ? "11" : "9"}
-            fontWeight={isCampaign ? "500" : "bold"}
-            letterSpacing={isCampaign ? "0.10em" : "0.12em"}
-            fill={isCampaign ? "rgba(0,40,104,0.35)" : "#9ab8d0"}
-            opacity={isCampaign ? "1" : "0.6"}
-            style={{ pointerEvents: "none", userSelect: "none", fontFamily: isCampaign ? "'Lato', sans-serif" : undefined }}
+            fontSize="9"
+            fontWeight="500"
+            letterSpacing="0.14em"
+            fill="rgba(154, 128, 112, 0.35)"
+            style={{ pointerEvents: "none", userSelect: "none", fontFamily: "'DM Mono', monospace" }}
           >
             {z.label}
           </text>
         ))}
 
+        {/* Edges — red thread connections */}
         {vEdges.map((edge, i) => {
           const s = pos[edge.source],
             t = pos[edge.target];
@@ -298,7 +303,7 @@ export default function GraphCanvas({
           const orig = edges.indexOf(edge);
           const lit = sel && cEi.has(orig);
           const dim = sel && !lit;
-          const c = EDGE_COLOR[edge.type] || "#9ab0c4";
+          const c = EDGE_COLOR[edge.type] || "#9a8070";
           const dx = t.x - s.x,
             dy = t.y - s.y,
             d = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -307,6 +312,7 @@ export default function GraphCanvas({
             y1 = s.y + (dy / d) * R;
           const x2 = t.x - (dx / d) * (R + 11),
             y2 = t.y - (dy / d) * (R + 11);
+          const isDashed = edge.type === "revolving_door";
           return (
             <g key={i}>
               <line
@@ -315,8 +321,9 @@ export default function GraphCanvas({
                 x2={x2}
                 y2={y2}
                 stroke={c}
-                strokeWidth={lit ? 3.5 : 1.8}
+                strokeWidth={lit ? 1.5 : 1}
                 strokeOpacity={dim ? 0.06 : lit ? 1 : 0.45}
+                strokeDasharray={isDashed ? "5,3" : undefined}
                 markerEnd={lit ? `url(#a-${edge.type})` : undefined}
               />
               {lit && d > 70 && (
@@ -324,14 +331,14 @@ export default function GraphCanvas({
                   x={(x1 + x2) / 2}
                   y={(y1 + y2) / 2 - 5}
                   textAnchor="middle"
-                  fill={c}
+                  fill="#e8d5b0"
                   fontSize="10"
-                  fontWeight="bold"
+                  fontWeight="500"
                   opacity="1"
-                  stroke={isCampaign ? "#F4F6FB" : "#f4f6f9"}
-                  strokeWidth="2.5"
+                  stroke="#1a0e0e"
+                  strokeWidth="3"
                   paintOrder="stroke fill"
-                  style={{ pointerEvents: "none", fontFamily: isCampaign ? "'Lato', sans-serif" : undefined }}
+                  style={{ pointerEvents: "none", fontFamily: "'DM Mono', monospace" }}
                 >
                   {edge.label.length > 30
                     ? edge.label.slice(0, 28) + "..."
@@ -342,6 +349,7 @@ export default function GraphCanvas({
           );
         })}
 
+        {/* Nodes — tack-pinned circles */}
         {vNodes.map((node) => {
           const p = pos[node.id];
           if (!p) return null;
@@ -349,11 +357,11 @@ export default function GraphCanvas({
           const isSel = sel === node.id;
           const isConn = sel && cNs.has(node.id);
           const isDim = sel && !isSel && !isConn;
-          const c = CAT_COLOR[node.category] || "#1e3a4a";
+          const c = CAT_COLOR[node.category] || "#9a8070";
           const R = weightToRadius(node.id, isSel);
           const labelLines = wrapLabel(node.label);
-          const labelFontSize = isCampaign ? "12" : isSel ? "12" : "11";
-          const labelColor = isDim ? "#c8d6e5" : isSel ? c : (isCampaign ? "#0A0A1A" : "#1a2840");
+          const labelFontSize = isSel ? "12" : "11";
+          const labelColor = isDim ? "rgba(154,128,112,0.3)" : isSel ? c : "#f5f0e8";
           const lineHeight = 13;
 
           return (
@@ -361,6 +369,7 @@ export default function GraphCanvas({
               key={node.id}
               transform={`translate(${p.x},${p.y})`}
               style={{ cursor: "pointer" }}
+              filter={isSel ? "url(#pin-glow)" : undefined}
               onMouseDown={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -383,6 +392,7 @@ export default function GraphCanvas({
                 dragMovedRef.current = false;
               }}
             >
+              {/* Selection glow ring */}
               {isSel && <circle r={R + 12} fill={c} opacity="0.12" />}
               {isSel && (
                 <circle
@@ -394,22 +404,25 @@ export default function GraphCanvas({
                   opacity="0.5"
                 />
               )}
+              {/* Main node circle — dark interior */}
               <circle
                 r={R}
-                fill="#ffffff"
+                fill="#1e1010"
                 stroke={c}
-                strokeWidth={isCampaign ? (isSel ? 2.5 : isConn ? 2 : 2.5) : (isSel ? 2.5 : isConn ? 2 : 1.2)}
+                strokeWidth={isSel ? 2.5 : isConn ? 2 : 1.2}
                 opacity={isDim ? 0.2 : 1}
               />
+              {/* Flag indicator dot */}
               {nd?.flag && (
                 <circle
                   r={7}
                   cx={R - 4}
                   cy={-R + 4}
-                  fill={nd.flagColor}
+                  fill={nd.flagColor || "#c0392b"}
                   opacity={isDim ? 0.1 : 0.95}
                 />
               )}
+              {/* Icon */}
               <text
                 y="1"
                 textAnchor="middle"
@@ -421,62 +434,39 @@ export default function GraphCanvas({
               >
                 {nd?.icon || "o"}
               </text>
+              {/* Label */}
               {labelLines.map((line, li) => (
                 <text
                   key={li}
                   y={R + 15 + li * lineHeight}
                   textAnchor="middle"
                   fontSize={labelFontSize}
-                  fontWeight={isCampaign ? "500" : isSel ? "bold" : "600"}
+                  fontWeight={isSel ? "500" : "400"}
                   fill={labelColor}
-                  stroke={isCampaign ? "#F4F6FB" : "#f4f6f9"}
+                  stroke="#1a0e0e"
                   strokeWidth="3"
                   paintOrder="stroke fill"
-                  style={{ pointerEvents: "none", fontFamily: isCampaign ? "'Lato', sans-serif" : undefined }}
+                  style={{ pointerEvents: "none", fontFamily: "'DM Mono', monospace" }}
                 >
                   {line}
                 </text>
               ))}
+              {/* Flag label */}
               {nd?.flag && !isDim && (
-                isCampaign ? (
-                  <g>
-                    <rect
-                      x={-((remapFlag ? remapFlag(nd.flag, styleName) : nd.flag).length * 3.2 + 7)}
-                      y={-R - 18}
-                      width={(remapFlag ? remapFlag(nd.flag, styleName) : nd.flag).length * 6.4 + 14}
-                      height={16}
-                      rx={4}
-                      fill="rgba(191,10,48,0.08)"
-                      style={{ pointerEvents: "none" }}
-                    />
-                    <text
-                      y={-R - 7}
-                      textAnchor="middle"
-                      fontSize="10"
-                      fontWeight="600"
-                      fill={nd.flagColor || '#BF0A30'}
-                      opacity={isSel || isConn ? 1 : 0.75}
-                      style={{ pointerEvents: "none", fontFamily: "'Lato', sans-serif" }}
-                    >
-                      {remapFlag ? remapFlag(nd.flag, styleName) : nd.flag}
-                    </text>
-                  </g>
-                ) : (
-                  <text
-                    y={-R - 10}
-                    textAnchor="middle"
-                    fontSize="8"
-                    fontWeight="bold"
-                    fill={nd.flagColor}
-                    stroke="#f4f6f9"
-                    strokeWidth="2.5"
-                    paintOrder="stroke fill"
-                    opacity={isSel || isConn ? 1 : 0.75}
-                    style={{ pointerEvents: "none" }}
-                  >
-                    [{nd.flag}]
-                  </text>
-                )
+                <text
+                  y={-R - 10}
+                  textAnchor="middle"
+                  fontSize="8"
+                  fontWeight="500"
+                  fill={nd.flagColor || "#c0392b"}
+                  stroke="#1a0e0e"
+                  strokeWidth="2.5"
+                  paintOrder="stroke fill"
+                  opacity={isSel || isConn ? 1 : 0.75}
+                  style={{ pointerEvents: "none", fontFamily: "'DM Mono', monospace" }}
+                >
+                  [{nd.flag}]
+                </text>
               )}
             </g>
           );

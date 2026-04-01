@@ -17,7 +17,6 @@ vi.mock("../loadNetwork", () => ({
     edges: [],
     nodeSources: {},
     theme: {
-      style: "default",
       CAT_COLOR: { person: "#60a5fa" },
       CAT_LABEL: { person: "Key People" },
       EDGE_COLOR: { family: "#fbbf24" },
@@ -27,16 +26,6 @@ vi.mock("../loadNetwork", () => ({
       ZONE_LABELS: [],
     },
   }),
-}));
-
-vi.mock("../styleLoader", () => ({
-  loadStyle: () => ({
-    palette: null,
-    cssVars: {},
-    meta: { id: "default" },
-  }),
-  buildThemeColors: () => null,
-  remapFlag: (flag) => flag,
 }));
 
 import App from "../App";

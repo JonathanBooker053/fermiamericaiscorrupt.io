@@ -8,7 +8,7 @@ const mockTheme = {
 };
 
 describe("Toolbar", () => {
-  it("renders the ALL filter button", () => {
+  it("renders the ALL FILES filter button", () => {
     render(
       <Toolbar
         nodes={[{ id: "a", label: "A", category: "person" }]}
@@ -19,13 +19,16 @@ describe("Toolbar", () => {
         setSel={() => {}}
       />
     );
-    expect(screen.getByText("ALL")).toBeInTheDocument();
+    expect(screen.getByText("ALL FILES")).toBeInTheDocument();
   });
 
   it("renders category filter buttons", () => {
     render(
       <Toolbar
-        nodes={[]}
+        nodes={[
+          { id: "a", label: "A", category: "person" },
+          { id: "b", label: "B", category: "company_core" },
+        ]}
         edges={[]}
         theme={mockTheme}
         filterCat={null}
@@ -33,7 +36,7 @@ describe("Toolbar", () => {
         setSel={() => {}}
       />
     );
-    expect(screen.getByText("KEY PEOPLE")).toBeInTheDocument();
-    expect(screen.getByText("FERMI CORE")).toBeInTheDocument();
+    expect(screen.getByText("Key People")).toBeInTheDocument();
+    expect(screen.getByText("Fermi Core")).toBeInTheDocument();
   });
 });

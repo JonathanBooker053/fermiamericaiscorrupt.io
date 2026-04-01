@@ -1,0 +1,132 @@
+/* ============================================================
+   PROJECT MATADOR — CRIME BOARD DESIGN TOKENS
+   Imported once in main.jsx
+============================================================ */
+
+@import '@fontsource/dm-mono/400.css';
+@import '@fontsource/dm-mono/500.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+
+:root {
+  /* Core palette */
+  --clr-board:        #1a0e0e;
+  --clr-board-mid:    #251515;
+  --clr-board-felt:   #2a1a10;
+  --clr-cork:         #3d2a1a;
+  --clr-paper:        #f5f0e8;
+  --clr-aged:         #e8d5b0;
+  --clr-faded:        #9a8070;
+  --clr-red:          #c0392b;
+  --clr-red-bright:   #e74c3c;
+  --clr-amber:        #d4880a;
+  --clr-amber-light:  #f5c842;
+  --clr-txd-blue:     #002868;
+  --clr-txd-red:      #BF0A30;
+  --clr-green:        #1a7a4a;
+  --clr-border:       rgba(192, 57, 43, 0.25);
+  --clr-border-light: rgba(245, 240, 232, 0.12);
+
+  /* Typography */
+  --font-case:   'DM Mono', 'Courier New', monospace;
+  --font-body:   'Inter', system-ui, sans-serif;
+  --font-mono:   'DM Mono', 'Courier New', monospace;
+
+  /* Spacing */
+  --radius-sm:  3px;
+  --radius-md:  6px;
+  --radius-lg:  10px;
+
+  /* Transitions */
+  --transition: 0.15s ease;
+
+  /* Node pin colors */
+  --pin-person:          #60a5fa;
+  --pin-company-core:    #f59e0b;
+  --pin-company-failed:  #ef4444;
+  --pin-company-other:   #8b5cf6;
+  --pin-finance:         #10b981;
+  --pin-partner:         #06b6d4;
+  --pin-political:       #f97316;
+  --pin-legal:           #ec4899;
+
+  /* Evidence tag colors */
+  --tag-classified-bg:   rgba(192, 57, 43, 0.15);
+  --tag-classified-text: #e8a090;
+  --tag-classified-border: rgba(192, 57, 43, 0.4);
+  --tag-warning-bg:      rgba(212, 136, 10, 0.15);
+  --tag-warning-text:    #f5c842;
+  --tag-warning-border:  rgba(212, 136, 10, 0.4);
+  --tag-active-bg:       rgba(26, 122, 74, 0.15);
+  --tag-active-text:     #5ce8a0;
+  --tag-active-border:   rgba(26, 122, 74, 0.4);
+  --tag-info-bg:         rgba(96, 165, 250, 0.12);
+  --tag-info-text:       #93c5fd;
+  --tag-info-border:     rgba(96, 165, 250, 0.3);
+}
+
+/* ── Global reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--clr-board);
+  color: var(--clr-paper);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar styling ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--clr-board); }
+::-webkit-scrollbar-thumb { background: var(--clr-cork); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--clr-red); }
+
+/* ── Selection ── */
+::selection { background: rgba(192, 57, 43, 0.35); color: var(--clr-paper); }
+
+/* ── Utility classes ── */
+.tag {
+  display: inline-block;
+  font-family: var(--font-case);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  border: 0.5px solid;
+  line-height: 1.4;
+}
+.tag-classified {
+  background: var(--tag-classified-bg);
+  color: var(--tag-classified-text);
+  border-color: var(--tag-classified-border);
+}
+.tag-warning {
+  background: var(--tag-warning-bg);
+  color: var(--tag-warning-text);
+  border-color: var(--tag-warning-border);
+}
+.tag-active {
+  background: var(--tag-active-bg);
+  color: var(--tag-active-text);
+  border-color: var(--tag-active-border);
+}
+.tag-info {
+  background: var(--tag-info-bg);
+  color: var(--tag-info-text);
+  border-color: var(--tag-info-border);
+}
+.case-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--clr-faded);
+  letter-spacing: 0.08em;
+}
